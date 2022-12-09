@@ -2,6 +2,22 @@ https://www.datacamp.com/tutorial/svm-classification-scikit-learn-python
 https://medium.com/geekculture/svm-classification-with-sklearn-svm-svc-how-to-plot-a-decision-boundary-with-margins-in-2d-space-7232cb3962c0
 https://www.python-engineer.com/courses/mlfromscratch/07_svm/
 
+what are kernels:
+https://medium.com/geekculture/kernel-methods-in-support-vector-machines-bb9409342c49 -> just perfect
+
+https://towardsdatascience.com/support-vector-machines-learning-data-science-step-by-step-f2a569d90f76
+https://tonio73.github.io/data-science/classification/ClassificationSVM.html
 TODO:
 https://towardsdatascience.com/introduction-to-machine-learning-algorithms-linear-regression-14c4e325882a
 https://towardsdatascience.com/support-vector-machine-introduction-to-machine-learning-algorithms-934a444fca47
+
+START HERE:
+https://tonio73.github.io/data-science/classification/ClassificationSVM.html  -> kwdikas me code
+
+cool math: https://scikit-learn.org/stable/modules/svm.html#svm-kernels
+https://en.wikipedia.org/wiki/Kernel_method
+
+wow explanation of kernels:
+https://stats.stackexchange.com/questions/152897/how-to-intuitively-explain-what-a-kernel-is
+kernel explanations + custom kernerls + cool graphs:
+https://xavierbourretsicotte.github.io/Kernel_feature_map.html
