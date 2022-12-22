@@ -23,8 +23,7 @@ def plotSvm(X, y, support=None, w=None, intercept=0.,
 
     im = ax.scatter(X[:, 0], X[:, 1], c=y, cmap=cmap, alpha=0.5, label=label)
     if support is not None:
-        ax.scatter(support[:, 0], support[:, 1], label='Support', s=80, facecolors='none',
-                   edgecolors='y', color='y')
+        ax.scatter(support[:, 0], support[:, 1], label='Support', s=80, facecolors='none', edgecolors='y', color='y')
         print("Number of support vectors = %d" % (len(support)))
     if w is not None:
         xx = np.array(bound[0])

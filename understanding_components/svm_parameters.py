@@ -20,12 +20,11 @@ X_test, y_test = generateBatchXor(n=N)
 # for C in [0.001, 0.0001 ]:
 #     run_sklearn_svm(X_train, X_test,y_train,y_test, C=C, file_name=f"results\svm_xor_{C}")
 
-
-# kernels
-
-def run_svm_with_kernel(C=10, gamma=1/2):
-    classifier = SVC(kernel='rbf', C=10, gamma=gamma, shrinking=False)
+def run_svm_with_kernel(C=1, gamma=1, kernel='rbf'):
+    classifier = SVC(kernel=kernel , C=1, gamma=gamma, shrinking=False)
     classifier.fit(X_train, y_train)
+
+    # we calculate test accuracy
     Y_pred = classifier.predict(X_test)
     cm = confusion_matrix(y_test, Y_pred)
     accuracy = float(cm.diagonal().sum()) / len(y_test)
@@ -34,9 +33,9 @@ def run_svm_with_kernel(C=10, gamma=1/2):
 
 
     plotSvm(X_train, y_train, support=classifier.support_vectors_, label='Training', ax=ax)
-    acc_result = f"\nAccuracy: {accuracy},   C={C}"
+    acc_result = f"\nAccuracy: {accuracy},   C={C}, Support Vectors num:{len(classifier.support_vectors_)}"
     print(acc_result)
-    plt.title(acc_result, fontsize=8)
+    plt.title(acc_result, fontsize=15)
     # Estimate and plot decision boundary
     xx = np.linspace(-1, 1, 50)
     X0, X1 = np.meshgrid(xx, xx)
@@ -45,9 +44,18 @@ def run_svm_with_kernel(C=10, gamma=1/2):
     # Estimate and plot decision boundary
     Y31 = classifier.predict(xy).reshape(X0.shape)
     ax.contour(X0, X1, Y31, colors='k', levels=[-1, 0], alpha=0.3, linestyles=['-.', '-'])
-    plt.savefig(f"results/rbf/svc_rbf_c{C}g{gamma}.png")
+
+    import os
+    dir = f"results/{kernel}"
+    if not os.path.exists(dir):
+        os.makedirs(dir, exist_ok=True)
+    plt.savefig(f'{dir}/svc_rbf_c{C}g{gamma}_kernel_{kernel}.png')
 
 
-gamma_2d_range = [1e-1, 1, 1e1, 1e2, 1e3]
-for gamma in gamma_2d_range:
-    run_svm_with_kernel(gamma=gamma)
+# gamma_2d_range = [1e-1, 1, 1e1, 1e2, 1e3]
+# for gamma in gamma_2d_range:
+#     run_svm_with_kernel(gamma=gamma, kernel='rbf)
+
+kernels = ['linear', 'poly', 'rbf', 'sigmoid', 'precomputed']
+for kernel in kernels:
+    run_svm_with_kernel(kernel=kernel)

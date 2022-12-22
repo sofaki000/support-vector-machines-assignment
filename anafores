@@ -22,5 +22,7 @@ https://stats.stackexchange.com/questions/152897/how-to-intuitively-explain-what
 kernel explanations + custom kernerls + cool graphs:
 https://xavierbourretsicotte.github.io/Kernel_feature_map.html
 
+kernels implementation:
+https://github.com/ElefHead/kernel-svm/blob/master/svm.py
 
 experiments on cifar: https://github.com/osamakhaan/CIFAR-10-Image-Classification
