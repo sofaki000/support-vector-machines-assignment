@@ -1,8 +1,25 @@
 from sklearn.datasets import make_blobs
 import numpy as np
+from keras.datasets import cifar10
+from keras.preprocessing.image import ImageDataGenerator
+from matplotlib import pyplot
+from keras_preprocessing.image import ImageDataGenerator
 
-from plot_utilities import plotSvm
+def get_uniform_data(lower, upper, num, num_dims):
+    return np.random.uniform(lower, upper, size=(num, num_dims))
 
+def get_labels_for_uniform_data(X):
+    Y = []
+    for x1, x2 in X:
+        if x2 < np.sin(10 * x1) / 5 + 0.3 or ((x2 - 0.8) ** 2 + (x1 - 0.5) ** 2) < 0.15 ** 2:
+            Y.append(1)
+        else:
+            Y.append(-1)
+    return np.asarray(Y)
+# data = get_uniform_data(0, 1, N, 2)
+# test_data = get_uniform_data(0, 1, N, 2)
+# labels = get_labels_for_uniform_data(data).reshape(-1)
+# test_labels = get_labels_for_uniform_data(test_data).reshape(-1)
 
 def get_test_data(num_samples=1000, train_percentage=0.8):
     indx_split = int(num_samples * train_percentage)

@@ -63,9 +63,11 @@ class SVM():
         self.intercept = 0
         for i in range(self._alphas.shape[0]): # kanei loop ta a
             self.intercept += self._support_labels[i]
-            self.intercept -= np.sum(self._alphas * self._support_labels * K_table[self._indices[i], is_sv])
+            self.intercept -= np.sum(self._alphas * self._support_labels
+                                     * K_table[self._indices[i], is_sv])
         self.intercept /= self._alphas.shape[0] # pairnei ton meso oro twn bs
-        self.weights = np.sum(data * labels.reshape(num_data, 1) * self._alphas.reshape(num_data, 1), axis=0,
+        self.weights = np.sum(data * labels.reshape(num_data, 1)
+                              * self._alphas.reshape(num_data, 1), axis=0,
                               keepdims=True) if self.kernel == "linear" else None
 
     def signum(self, X):

@@ -1,26 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
+
+from data_utilities.test_data import get_uniform_data, get_labels_for_uniform_data
 from svm import SVM
 
 np.random.seed(1)
-def get_data(lower, upper, num, num_dims):
-    return np.random.uniform(lower, upper, size=(num, num_dims))
-
-
-def get_labels(X):
-    Y = []
-    for x1, x2 in X:
-        if x2 < np.sin(10 * x1) / 5 + 0.3 or ((x2 - 0.8) ** 2 + (x1 - 0.5) ** 2) < 0.15 ** 2:
-            Y.append(1)
-        else:
-            Y.append(-1)
-    return np.asarray(Y)
 
 
 def main():
     N = 100
-    data = get_data(0, 1, N, 2)
-    labels = get_labels(data).reshape(-1)
+    data = get_uniform_data(0, 1, N, 2)
+    labels = get_labels_for_uniform_data(data).reshape(-1)
     predictions = np.ones_like(labels) * -1
     print("Max-class classifier training set accuracy: ", np.mean(np.equal(predictions, labels)) * 100, "%")
     model = SVM(kernel="rbf", gamma=3)

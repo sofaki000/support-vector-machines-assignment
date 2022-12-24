@@ -1,51 +1,72 @@
 import numpy as np
 
 from custom_impl.my_svm import My_SVM
-from data_utilities.cifar10_utilities import get_cifar, get_cifar_binary
+from data_utilities.cifar10_utilities import get_cifar_binary
+import time
 
+from utilities.metric_utilities import get_metrics
+from utilities.plot_utilities import plot_confusion_matrix
 
-def get_data(lower, upper, num, num_dims):
-    return np.random.uniform(lower, upper, size=(num, num_dims))
+start_time = time.time()
 
+experiments_file_name = "from_scratch_experiments.txt"
 
-def get_labels(X):
-    Y = []
-    for x1, x2 in X:
-        if x2 < np.sin(10 * x1) / 5 + 0.3 or ((x2 - 0.8) ** 2 + (x1 - 0.5) ** 2) < 0.15 ** 2:
-            Y.append(1)
-        else:
-            Y.append(-1)
-    return np.asarray(Y)
-
-
-N = 1000
+N = 10
 
 data, test_data, labels, test_labels = get_cifar_binary(data_num=N)
-# data = get_data(0, 1, N, 2)
-# test_data = get_data(0, 1, N, 2)
-# labels = get_labels(data).reshape(-1)
-# test_labels = get_labels(test_data).reshape(-1)
-predictions = np.ones_like(labels) * -1
-# print("Max-class classifier training set accuracy: ", np.mean(np.equal(predictions, labels)) * 100, "%")
 model = My_SVM()
-model.fit_data(data, labels)
+sv_num = model.fit_data(data, labels)
+train_duration =  time.time() - start_time
+
 
 correct = 0
 samples_size = test_data.shape[0]
 
+model_predictions = []
+
 for i in range(samples_size):
+    print(f"Testing num {i}...")
     x = test_data[i]
     y = test_labels[i]
     prediction = model.predict(x)
-
+    model_predictions.append(prediction)
     if prediction==y:
         correct+=1
 
+
+actual, predicted = test_labels, np.array(model_predictions)
+metrics_content = get_metrics('confusion_matrix', actual, predicted)
+
 accuracy = (correct/N) * 100
 
-f = open("from_scratch_experiments.txt", "a")
-f.write(f"No b , samples={N}\n")
+
+f = open(experiments_file_name, "a")
+f.write(f"with data augmentation , samples={N}\n")
+
+time_content = f'Training time:{train_duration:.2f}s'
+print(time_content)
+f.write(f'{time_content}\n')
+
+number_of_a_class_predictions = np.count_nonzero(np.array(model_predictions)==1)
+number_of_b_class_predictions = np.count_nonzero(np.array(model_predictions)==-1)
+predictions_content = f'Predicted A class:{number_of_a_class_predictions}.\nPredicted b class:{number_of_b_class_predictions}'
+print(predictions_content)
+f.write(f'{predictions_content}\n')
+
+
+num_data, num_features = data.shape
+samples_num_content = f'Num of samples:{num_data}'
+sv_num_content = f'Num of support vectors {sv_num}'
+print(samples_num_content)
+print(sv_num_content)
+f.write(f'{samples_num_content}\n')
+f.write(f'{sv_num_content}\n')
+
+
 accuracy_content = f'Accuracy is {accuracy}%'
 f.write(f'{accuracy_content}\n')
+
+f.write(f'{metrics_content}\n')
+
 print(accuracy_content)
 f.close()

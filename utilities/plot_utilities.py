@@ -9,8 +9,19 @@ def plotLine(ax, xRange, w, x0, label, color='grey', linestyle='-', alpha=1.):
     yy = -(w[0] / w[1]) * (xRange - x0[0]) + x0[1]
     ax.plot(xRange, yy, color=color, label=label, linestyle=linestyle)
 
-colors = ['blue','red']
-cmap = pltcolors.ListedColormap(colors)
+# colors = ['blue','red']
+# cmap = pltcolors.ListedColormap(colors)
+
+import matplotlib.pyplot as plt
+from sklearn import metrics
+
+def plot_confusion_matrix(filename, actual, predicted):
+    confusion_matrix = metrics.confusion_matrix(actual, predicted)
+
+    cm_display = metrics.ConfusionMatrixDisplay(confusion_matrix=confusion_matrix, display_labels=['Dog', 'Deer'])
+
+    cm_display.plot()
+    plt.savefig(f'{filename}.png')
 
 def plotSvm(X, y, support=None, w=None, intercept=0.,
             label='Data',

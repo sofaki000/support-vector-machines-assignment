@@ -10,6 +10,12 @@ from torchvision.datasets import CIFAR10
 from torch.utils.data import Subset
 import config
 import numpy as np
+
+from data_utilities.cifar10_data_augmentation import normalize_images, rotate_images, vertical_scroll_images, \
+    symmetry_horizontal, featurewise_center, samplewise_center, print_data_augmentation_images
+from utilities.augmentation_utilities import get_symmetry_horizontal, plot_augmented_data, get_rotated_images, \
+    get_normalized_images, plot_normal_data
+
 cifar_data_fila_path = config.cifar_path
 classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
@@ -27,35 +33,48 @@ def get_cifar(data_num=5):
     return X_train, X_test, y_train, y_test
 
 
-def get_cifar_binary(data_num=5):
-    X_train, y_train, X_test, y_test = load_datasets(data_num=data_num)
+def get_cifar_binary(data_num=5, percentage_of_data_to_keep =0.5):
+    X_train, y_train, X_test, y_test = load_datasets(data_num=data_num, percentage_of_data_to_keep=percentage_of_data_to_keep)
 
-    target_class = 5
+    a_class = 5
+    b_class = 4
 
-    for i in np.array([i for i, x in enumerate(y_train) if y_train[i] == target_class]):
+    for i in np.array([i for i, x in enumerate(y_train) if y_train[i] == a_class]):
         y_train[i] = 1
-    for i in np.array([i for i, x in enumerate(y_train) if y_train[i] != target_class and y_train[i]!=1]):
+    for i in np.array([i for i, x in enumerate(y_train) if y_train[i] == b_class ]):
         y_train[i] = -1
 
-    for i in np.array([i for i, x in enumerate(y_test) if y_test[i] == target_class]):
+    for i in np.array([i for i, x in enumerate(y_test) if y_test[i] == a_class]):
         y_test[i] = 1
-    for i in np.array([i for i, x in enumerate(y_test) if y_test[i] != target_class]):
+    for i in np.array([i for i, x in enumerate(y_test) if y_test[i] == b_class ]):
         y_test[i] = -1
 
 
     for i in range(len(X_train)):
-        X_train[i] = X_train[i].reshape(-1, 3072)
-        X_test[i]= X_test[i].reshape(-1, 3072)
+        X_train[i] = X_train[i].flatten().reshape(-1, 3072)
 
-    X_train = np.asarray(X_train).reshape(data_num,3072)
-    X_test = np.asarray(X_test).reshape(data_num,3072)
+    for i in range(len(X_test)):
+        X_test[i]= X_test[i].flatten().reshape(-1, 3072)
+
+    num_samples_train = len(X_train)
+    X_train = np.asarray(X_train).reshape(num_samples_train,3072)
+
+    num_samples_test = len(X_test)
+    X_test = np.asarray(X_test).reshape(num_samples_test,3072)
+
     y_train = np.asarray(y_train)
     y_test =np.asarray(y_test)
+
+    print(f'Number of A class on train ds: {np.count_nonzero(np.array(y_train)==1)}')
+    print(f'Number of A class on test ds: {np.count_nonzero(np.array(y_test)==1)}')
+    print(f'Number of B class on train ds: {np.count_nonzero(np.array(y_train)==-1)}')
+    print(f'Number of B class on test ds: {np.count_nonzero(np.array(y_test)==-1)}')
+
     return X_train, X_test, y_train, y_test
 
 
 def get_dataset_for_developing(transform, percentage_of_data_to_keep=0.5):
-    ds = CIFAR10(cifar_data_fila_path, train=True, download=False, transform=transform)
+    ds = CIFAR10(cifar_data_fila_path, train=True, download=False , transform=transform)
     dog_indices, deer_indices, airplane_indices, automobile_indices, ship_indices, truck_indices, bird_indices, frog_indices, horse_indices, cat_indices = [], [], [], [], [], [], [], [], [], []
     dog_idx, deer_idx = ds.class_to_idx['dog'], ds.class_to_idx['deer']
     airplane_idx, automobile_idx = ds.class_to_idx['airplane'], ds.class_to_idx['automobile']
@@ -106,12 +125,13 @@ def get_dataset_for_developing(transform, percentage_of_data_to_keep=0.5):
     return new_dataset,test_dataset
 
 
-def load_datasets(data_num=5):
-    transform = transforms.Compose([transforms.Resize((32, 32)),
-                                    transforms.ToTensor(),
-                                    transforms.Normalize((0,), (1,)), nn.Flatten()])
+def load_datasets(data_num=5, percentage_of_data_to_keep=0.5):
+    # transform = transforms.Compose([transforms.Resize((32, 32)),
+    #                                 transforms.ToTensor(),
+    #                                 transforms.Normalize((0,), (1,)), nn.Flatten()])
+    transform = transforms.Compose([transforms.ToTensor() ])
 
-    trainset,testset = get_dataset_for_developing(transform, percentage_of_data_to_keep=0.5)
+    trainset,testset = get_dataset_for_developing(transform, percentage_of_data_to_keep=percentage_of_data_to_keep)
 
     # for whole dataset
     # trainset = torchvision.datasets.CIFAR10(root=filepath, train=True, transform=transform, download=False)
@@ -132,6 +152,7 @@ def load_datasets(data_num=5):
     if load_for_development:  # we dont load the whole cifar
         counter = 0
         for idx, (data, tar) in enumerate(test_dataloader):
+
             x_test.append(data.squeeze().numpy())
             y_test.append(tar.squeeze().item())
             counter += 1
@@ -140,10 +161,49 @@ def load_datasets(data_num=5):
                 break
 
         counter = 0
+        x_horizontally_symmetrical = []
+        x_rotated = []
+        x_featurewise_center = []
+        x_normalized_images = []
+        x_normal_images = []
+
+
         for idx, (data, tar) in enumerate(train_dataloader):
             x_train.append(data.squeeze().numpy())
             y_train.append(tar.squeeze().item())
+            x_normal_images.append(data.squeeze().numpy())
 
+            if(len(x_horizontally_symmetrical)==5):
+                # we get images for data augmentation theory section
+                plot_augmented_data("horizontal_v2", x_horizontally_symmetrical)
+                plot_augmented_data("rotated_v2", x_rotated)
+                plot_normal_data("og_pics_v2", x_normal_images)
+                plot_augmented_data("normalized_v2", x_normalized_images)
+                plot_augmented_data("featurewise_center_v2", x_featurewise_center)
+
+            # horizontally symetrical images
+            symmetry_horizontal_images = get_symmetry_horizontal(data.numpy())
+            x_train.append(symmetry_horizontal_images[0][0])
+            y_train.append(tar.squeeze().item())
+            x_horizontally_symmetrical.append(symmetry_horizontal_images)
+
+            # rotated images
+            rotated_images = get_rotated_images(data.numpy())
+            x_train.append(rotated_images[0][0])
+            y_train.append(tar.squeeze().item())
+            x_rotated.append(rotated_images)
+
+            # normalized images
+            normalized_images = get_normalized_images(data.numpy())
+            x_train.append(normalized_images[0][0])
+            y_train.append(tar.squeeze().item())
+            x_normalized_images.append(normalized_images)
+
+            # featurewise images
+            featurewise_images = get_normalized_images(data.numpy())
+            x_train.append(featurewise_images[0][0])
+            y_train.append(tar.squeeze().item())
+            x_featurewise_center.append(featurewise_images)
             counter = counter + 1
 
             if counter == data_num:

@@ -26,3 +26,7 @@ kernels implementation:
 https://github.com/ElefHead/kernel-svm/blob/master/svm.py
 
 experiments on cifar: https://github.com/osamakhaan/CIFAR-10-Image-Classification
+
+
+
+data augmentation: https://www.kaggle.com/code/mielek/data-augmentation-with-keras-using-cifar-10/notebook

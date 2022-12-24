@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 
 from classifiers import MaxMarginClassifier, LinearSvmClassifier
 from data_utilities.test_data import generateBatchBipolar
-from plot_utilities import plotSvm
+from utilities.plot_utilities import plotSvm
 
 N = 100
 xTrain0, yTrain0 = generateBatchBipolar(N,  mu=0.5, sigma=0.2)

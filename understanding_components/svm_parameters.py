@@ -3,9 +3,8 @@ from matplotlib import pyplot as plt
 from sklearn.metrics import confusion_matrix
 from sklearn.svm import SVC
 
-from data_utilities.test_data import generateBatchBipolar, generateBatchXor
-from model import run_sklearn_svm
-from plot_utilities import plotSvm
+from data_utilities.test_data import generateBatchXor
+from utilities.plot_utilities import plotSvm
 
 N = 100
 

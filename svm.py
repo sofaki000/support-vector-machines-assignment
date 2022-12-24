@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 
 from data_utilities.test_data import get_test_data
 from model import run_sklearn_svm
-from plot_utilities import visualize_svm
+from utilities.plot_utilities import visualize_svm
 
 epochs = 10000
 learning_rate = 0.001
