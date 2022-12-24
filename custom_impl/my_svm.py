@@ -5,7 +5,6 @@ from cvxopt import solvers
 
 class My_SVM():
     def __init__(self, kernel_type='linear', gamma=1):
-
         if kernel_type=='linear':
             print('Using linear kernel...')
             self.kernel = self.linear_kernel
