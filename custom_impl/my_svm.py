@@ -4,8 +4,17 @@ from cvxopt import solvers
 
 
 class My_SVM():
-    def __init__(self):
-        pass
+    def __init__(self, kernel_type='linear', gamma=1):
+
+        if kernel_type=='linear':
+            print('Using linear kernel...')
+            self.kernel = self.linear_kernel
+        elif kernel_type=='rbf':
+            print('Using rbf kernel...')
+            self.kernel = self.rbf
+            self.gamma = gamma
+    def rbf(self, x, y):
+        return np.exp(-1.0 * self.gamma * np.dot(np.subtract(x, y).T, np.subtract(x, y)))
     def linear_kernel(self, x , y):
         return np.dot(x, y.T)
     def get_k_table(self, data):
@@ -15,7 +24,7 @@ class My_SVM():
 
         for i in range(num_data):
             for j in range(num_data):
-                K[i][j] = self.linear_kernel(data[i], data[j])
+                K[i][j] = self.kernel(data[i], data[j])
 
         return K
     def get_langrange_multipliers(self, data , labels):
@@ -88,7 +97,7 @@ class My_SVM():
             support_vectors_num = support_vectors_labels.shape[0]
             multiplication = (support_vectors_labels*alphas)
             for i in range(support_vectors_num):
-                sum += multiplication[i]* self.linear_kernel(support_vectors[i], x_to_decide_for)
+                sum += multiplication[i]* self.kernel(support_vectors[i], x_to_decide_for)
 
 
             b = self.get_b(support_vectors_labels)

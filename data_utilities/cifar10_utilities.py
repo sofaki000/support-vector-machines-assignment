@@ -20,10 +20,10 @@ cifar_data_fila_path = config.cifar_path
 classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
 
-def get_cifar(data_num=5):
+def get_cifar(data_num=5, num_features=3072):
     X_train, y_train, X_test, y_test = load_datasets(data_num=5)
-    X_train = X_train.reshape(-1, 3072)
-    X_test = X_test.reshape(-1, 3072)
+    X_train = X_train.reshape(-1, num_features)
+    X_test = X_test.reshape(-1, num_features)
     pca = PCA(0.9)
     # train_img_pca = pca.fit_transform(X_train)
     # test_img_pca = pca.transform(X_test)
@@ -33,7 +33,7 @@ def get_cifar(data_num=5):
     return X_train, X_test, y_train, y_test
 
 
-def get_cifar_binary(data_num=5, percentage_of_data_to_keep =0.5):
+def get_cifar_binary(data_num=5, percentage_of_data_to_keep =0.5, num_features =3072):
     X_train, y_train, X_test, y_test = load_datasets(data_num=data_num, percentage_of_data_to_keep=percentage_of_data_to_keep)
 
     a_class = 5
@@ -51,16 +51,16 @@ def get_cifar_binary(data_num=5, percentage_of_data_to_keep =0.5):
 
 
     for i in range(len(X_train)):
-        X_train[i] = X_train[i].flatten().reshape(-1, 3072)
+        X_train[i] = X_train[i].flatten().reshape(-1, num_features)
 
     for i in range(len(X_test)):
-        X_test[i]= X_test[i].flatten().reshape(-1, 3072)
+        X_test[i]= X_test[i].flatten().reshape(-1, num_features)
 
     num_samples_train = len(X_train)
-    X_train = np.asarray(X_train).reshape(num_samples_train,3072)
+    X_train = np.asarray(X_train).reshape(num_samples_train, num_features)
 
     num_samples_test = len(X_test)
-    X_test = np.asarray(X_test).reshape(num_samples_test,3072)
+    X_test = np.asarray(X_test).reshape(num_samples_test, num_features)
 
     y_train = np.asarray(y_train)
     y_test =np.asarray(y_test)
@@ -129,7 +129,7 @@ def load_datasets(data_num=5, percentage_of_data_to_keep=0.5):
     # transform = transforms.Compose([transforms.Resize((32, 32)),
     #                                 transforms.ToTensor(),
     #                                 transforms.Normalize((0,), (1,)), nn.Flatten()])
-    transform = transforms.Compose([transforms.ToTensor() ])
+    transform = transforms.Compose([transforms.ToTensor()])
 
     trainset,testset = get_dataset_for_developing(transform, percentage_of_data_to_keep=percentage_of_data_to_keep)
 

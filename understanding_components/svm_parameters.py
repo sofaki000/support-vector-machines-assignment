@@ -29,8 +29,6 @@ def run_svm_with_kernel(C=1, gamma=1, kernel='rbf'):
     accuracy = float(cm.diagonal().sum()) / len(y_test)
 
     fig, ax = plt.subplots(1, figsize=(11, 7))
-
-
     plotSvm(X_train, y_train, support=classifier.support_vectors_, label='Training', ax=ax)
     acc_result = f"\nAccuracy: {accuracy},   C={C}, Support Vectors num:{len(classifier.support_vectors_)}"
     print(acc_result)

@@ -3,22 +3,16 @@ from custom_impl.my_svm import My_SVM
 from data_utilities.cifar10_utilities import get_cifar_binary
 import time
 from utilities.metric_utilities import get_metrics
-from utilities.pca_utilities import get_pca_data
 
 start_time = time.time()
 
-experiments_file_name = "from_scratch_experiments_pca_linear.txt"
+experiments_file_name = "rbf_from_scratch_experiments.txt"
 
 N = 2000
-
 data, test_data, labels, test_labels = get_cifar_binary(data_num=N)
-
-data, test_data = get_pca_data(data, test_data)
-
-model = My_SVM()
+model = My_SVM(kernel_type='rbf')
 sv_num = model.fit_data(data, labels)
-train_duration =time.time() - start_time
-
+train_duration =  time.time() - start_time
 
 correct = 0
 samples_size = test_data.shape[0]
@@ -36,7 +30,7 @@ for i in range(samples_size):
 
 
 actual, predicted = test_labels, np.array(model_predictions)
-metrics_content = get_metrics('confusion_matrix_linear_kernel_2000samples', actual, predicted)
+metrics_content = get_metrics('confusion_matrix_rbf_kernel', actual, predicted)
 
 accuracy = (correct/N) * 100
 
